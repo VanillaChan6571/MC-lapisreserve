@@ -16,18 +16,20 @@ import tf.ssf.sfort.lapisreserve.PlayerInterface;
 
 @Mixin(PlayerInventory.class)
 public class PlayerReserve implements PlayerInterface {
-	@Dynamic
-	public ItemStack lapisreserve = ItemStack.EMPTY;
+	// Try using a @Shadow field instead of direct declaration
 	@Shadow
 	public PlayerEntity player;
+
+	public ItemStack lapisreserve = ItemStack.EMPTY;
 
 	@Inject(method = "writeNbt(Lnet/minecraft/nbt/NbtList;)Lnet/minecraft/nbt/NbtList;",at=@At("HEAD"))
 	public void serialize(NbtList tag, CallbackInfoReturnable<NbtList> info) {
 		if (lapisreserve.isEmpty()) return;
 		NbtCompound compoundTag = new NbtCompound();
 		compoundTag.putByte("LapisReserve", (byte)0);
-		tag.add(lapisreserve.encode(this.player.getRegistryManager(), compoundTag));
+		tag.add(compoundTag);
 	}
+
 	@Inject(method = "readNbt(Lnet/minecraft/nbt/NbtList;)V",at=@At("HEAD"))
 	public void deserialize(NbtList tag, CallbackInfo info) {
 		for(int i = 0; i < tag.size(); ++i) {
